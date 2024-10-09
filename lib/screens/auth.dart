@@ -21,6 +21,7 @@ class _AuthScreenState extends State<AuthScreen> {
   bool _isLogin = true;
   var _enteredEmail = '';
   var _enteredPassword = '';
+  var _enteredUsername = '';
   File? _selectedImage;
   bool _isAuthenticating = false;
 
@@ -58,11 +59,10 @@ class _AuthScreenState extends State<AuthScreen> {
             .collection('users')
             .doc(userCredentials.user!.uid)
             .set({
-          'username': 'to be done',
+          'username': _enteredUsername,
           'email': _enteredEmail,
           'imageUrl': imageUrl,
         });
-        print(imageUrl);
       }
     } on FirebaseAuthException catch (error) {
       if (context.mounted) {
@@ -132,9 +132,24 @@ class _AuthScreenState extends State<AuthScreen> {
                               _enteredEmail = newValue!;
                             },
                           ),
-                          TextFormField(
-
-                          ),
+                          if (!_isLogin)
+                            TextFormField(
+                              decoration: InputDecoration(
+                                labelText: 'Username',
+                              ),
+                              enableSuggestions: false,
+                              validator: (value) {
+                                if (value == null ||
+                                    value.isEmpty ||
+                                    value.trim().length < 4) {
+                                  return 'Please enter atleast four characters';
+                                }
+                                return null;
+                              },
+                              onSaved: (value) {
+                                _enteredUsername = value!;
+                              },
+                            ),
                           TextFormField(
                             decoration:
                                 const InputDecoration(labelText: 'Password'),
@@ -154,6 +169,7 @@ class _AuthScreenState extends State<AuthScreen> {
                               padding: const EdgeInsets.all(16.0),
                               child: CircularProgressIndicator(),
                             ),
+                            SizedBox(height: 10,),
                           if (!_isAuthenticating)
                             ElevatedButton(
                               onPressed: _submit,
