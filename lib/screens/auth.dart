@@ -163,6 +163,7 @@ class _AuthScreenState extends State<AuthScreen> {
                             onSaved: (newValue) {
                               _enteredPassword = newValue!;
                             },
+                            onEditingComplete: _submit,
                           ),
                           if (_isAuthenticating)
                             Padding(
